@@ -1,0 +1,182 @@
+<html lang = "ja">
+<!--遊び方　乾杯と表示されたタイミングでクリック・タップ！もし相打ちだったらクリック連打で状況を打破できる！-->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="牛乳.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<title>牛乳クラッシャー</title>
+<style>
+* {font-family:'DotGothic16', sans-serif !important; user-select:none;overflow:hidden;}
+
+h1 {
+top:5%;
+left:50%;
+position:absolute;
+transform:translate(-50%,-50%);
+text-shadow:0px 0px 8px #ffff00;
+font-size:clamp(10px, 5vw, 100px);}
+
+h2 {
+top:20%;
+left:50%;
+position:absolute;
+transform:translate(-50%,-50%);
+text-shadow:0px 0px 8px #00ff00;
+font-size:clamp(5px, 2vw, 70px);}
+
+#startBtn {
+top:65%;
+left:50%;
+position:absolute;
+transform:translate(-50%,-50%);
+font-size:clamp(20px, 3vw, 120px);
+border:3px solid #000;
+border-radius:8px;
+background-color:#ffff00;
+color:black;
+box-shadow:3px 3px 7px #000;
+display:block;}
+
+#startBtn.hide {display:none;}
+
+.milk {top:45%; width:25vw; position:absolute; transform:translate(-50%,-50%);}
+
+.milk img {width:100%;height:auto;}
+
+#milk1 {left:30%; display:none;}
+
+#milk1.show {display:block;}
+
+#milk2 {left:70%; display:none;}
+
+#milk2.show {display:block;}
+
+#kanpaiman {top:80%;left:50%;position:absolute;transform:translate(-50%,-50%);font-size:clamp(30px, 4vw, 120px);color:#ffff00;background-color:#ff0000;padding:2vw; border:5px double #ffaa00; display:none;}
+
+#kanpaiman.show {display:block;}
+
+.shake {
+animation: sk 0.05s infinite alternate;
+}
+
+@keyframes sk {
+0% { transform:translate(-52%, -50%);}
+100% { transform:translate(-48%, -50%);}
+}
+
+#desk {width:100%;height:100%;z-index:-99;margin:0;}
+
+#next {top:70%; left:70%; font-size:clamp(20px, 3vw, 100px); position:absolute; background-color:#33ffaa;border-radius:8px; display:none;}
+
+#next.show {display:block;}
+
+#next:active {font-size:clamp(15px,2vw,90vw) !important;}
+
+#answer {top:50%;left:50%;position:absolute;transform:translate(-50%,-50%);padding:10px;border-radius:8px;border:5px solid #000;background-color:white;text-shadow:0px 0px 5px #2277ff;display:none;font-size:clamp(40px, 5vw, 140px);}
+
+#answer.show {display:block;}
+
+#ren {top:90%; left:50%; position:absolute; transform:translate(-50%,-50%);font-size:clamp(20px, 2vw, 100px);text-shadow:0px 0px 5px #ff77aa;z-index:99;}
+
+#PLAY {top:50%;left:2%;position:absolute;font-size:clamp(10px, 1vw, 40px);color:black;}
+
+#thank {top:75%;left:2%;position:absolute;font-size:clamp(10px, 1vw, 40px);color:black;}
+</style>
+</head>
+<body>
+<h1>牛乳クラッシャー</h1>
+<h2>乾杯のタイミングでクリック・タップ！</h2>
+<button id="startBtn">スタート</button>
+<div id="milk1" class="milk"><img src="牛乳2.png"></div>
+<div id="milk2" class="milk"><img src="牛乳.png"></div>
+<div id="kanpaiman">乾杯！</div>
+<img src="desk.png" id="desk">
+<button id="next">次へ</button>
+<div id="answer"></div>
+<div id="ren">現在0連貫</div>
+<details id="thank">
+<summary>クレジット（素材元・開発元）　　</summary>
+<div id="thanks">
+<p>音源：<strong>効果音ラボ</strong></p>
+<p>ゲームアイディア：<strong>katsukoubushi</strong></p>
+<p>イラスト・プログラム:<strong>自作</strong></p>
+</div>
+</details>
+<details id="PLAY">
+<summary>遊び方</summary>
+<p>「乾杯」と表示されたタイミングでタップ・クリック</p>
+<p>相打ちだった場合タップ・クリック連打で押しつぶせ！</p>
+<p><strong>それではlet's スタート！</strong></p>
+</details>
+
+<audio src="aiuti.mp3" id="aiuti"></audio>
+<audio src="KO.mp3" id="KO"></audio>
+<audio src="startBGM.mp3" id="startBGM"></audio>
+<audio src="gogogo.mp3" id="gogogo"></audio>
+<audio src="winBGM.mp3" id="winBGM"></audio>
+<audio src="roseBGM.mp3" id="roseBGM"></audio>
+<audio src="glass.mp3" id="glass"></audio>
+<script>
+const startBtn = document.getElementById("startBtn");
+const milk1 = document.getElementById("milk1");
+const milk2 = document.getElementById("milk2");
+const kanpaiman = document.getElementById("kanpaiman");
+const next = document.getElementById("next");
+const answer = document.getElementById("answer");
+const ren = document.getElementById("ren");
+
+const KO = document.getElementById("KO");
+const aiuti = document.getElementById("aiuti");
+const startBGM = document.getElementById("startBGM");
+const gogogo = document.getElementById("gogogo");
+const winBGM = document.getElementById("winBGM");
+const roseBGM = document.getElementById("roseBGM");
+const glass = document.getElementById("glass");
+
+let waitClick = "off";
+let waitClick2 = "off";
+let time = 3000;
+let OK = "true";
+let timeup = "true"
+let click = 0;
+let renwin = 0;
+let mode = "start"
+
+
+startBtn.addEventListener("click", () =>{start(); startBtn.classList.add("hide");});
+
+document.addEventListener("click", () =>{if (waitClick === "on") {move();} else if (mode === "game") {early();};if (waitClick2 === "on") {click += 1;};});
+
+next.addEventListener("click", () =>{nextn()});
+
+function start() {milk1.classList.add("show");milk2.classList.add("show"); setTimeout(() =>{kanpai()},Math.random() * 2500 + 3000); OK = "true";milk1.style.left = 30 + "%";milk2.style.left = 70 + "%";setTimeout(() =>{mode = "game"},10);startBGM.play()};
+
+function kanpai() {kanpaiman.classList.add("show");waitClick = "on";setTimeout(() =>{OK = "false"},time / 2);setTimeout(() =>{OK = "out"},time);glass.play()}
+
+function move() {
+if (OK === "true") {milk1.style.left = 60 + "%";milk2.style.left = 70 + "%";milk2.innerHTML = `<img src="牛乳break.png">`;win = "me"; finishing();KO.play();winBGM.play();}
+else if (OK === "false") {milk1.style.left = 47 + "%";milk2.style.left = 53 + "%"; timeup = "false"; TIMEU();click = 0;fal(); aiuti.play();gogogo.play();}
+else if (OK === "out") {milk2.style.left = 40 + "%";milk1.style.left = 30 + "%";milk1.innerHTML = `<img src="牛乳break2.png">`;win = "you"; finishing();KO.play();roseBGM.play()}
+waitClick = "off"; mode = "finish";}
+
+function fal() {
+waitClick2 = "on";
+milk1.classList.add("shake");
+milk2.classList.add("shake");
+}
+
+function TIMEU() {setTimeout(() =>{timeup = "true";finish()},3000)};
+
+function finish() {waitClick2 = "off";milk1.classList.remove("shake");milk2.classList.remove("shake");if (click > 15) {OK = "true"} else {OK = "out"}; move();gogogo.pause();gogogo.currentTime = 0;}
+
+function finishing() {if (win === "me") {answer.innerHTML = `勝利！`; time = time / 1.1;renwin += 1} else {answer.innerHTML = `敗北…`; renwin = 0; time = 3000}; ren.innerHTML = `現在${renwin}連貫`;answer.classList.add("show");setTimeout(() =>{answer.classList.remove("show");next.classList.add("show");},2000);}
+
+function nextn() {milk2.innerHTML = `<img src="牛乳.png">`;milk1.innerHTML = `<img src="牛乳2.png">`;next.classList.remove("show");kanpaiman.classList.remove("show");click = 0;start();}
+
+function early() {milk2.innerHTML = `<img src="牛乳.png">`;milk1.innerHTML = `<img src="牛乳2.png">`;kanpaiman.classList.remove("show");click = 0; renwin = 0; time = 3000; answer.innerHTML = `お手付き！`;ren.innerHTML = `現在${renwin}連貫`;answer.classList.add("show");setTimeout(() =>{answer.classList.remove("show");},1000);startBGM.play();}
+</script>
+</body>
+</html>
