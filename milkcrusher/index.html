@@ -170,7 +170,7 @@ milk2.classList.add("shake");
 
 function TIMEU() {setTimeout(() =>{timeup = "true";finish()},3000)};
 
-function finish() {waitClick2 = "off";milk1.classList.remove("shake");milk2.classList.remove("shake");if (click > 15) {OK = "true"} else {OK = "out"}; move();gogogo.pause();gogogo.currentTime = 0;}
+function finish() {waitClick2 = "off";milk1.classList.remove("shake");milk2.classList.remove("shake");if (click > 12) {OK = "true"} else {OK = "out"}; move();gogogo.pause();gogogo.currentTime = 0;}
 
 function finishing() {if (win === "me") {answer.innerHTML = `勝利！`; time = time / 1.1;renwin += 1} else {answer.innerHTML = `敗北…`; renwin = 0; time = 3000}; ren.innerHTML = `現在${renwin}連貫`;answer.classList.add("show");setTimeout(() =>{answer.classList.remove("show");next.classList.add("show");},2000);}
 
